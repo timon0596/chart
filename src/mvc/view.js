@@ -7,8 +7,9 @@ export class View {
     this.w = this.data.$root[0].offsetWidth;
     this.h = this.data.$root[0].offsetHeight;
     this.drawCanvas();
-    this.drawScaleY();
-    this.addDelimiters();
+    this.drawAxises();
+    this.addDelimitersX();
+    this.addDelimitersY();
   }
 
   drawCanvas() {
@@ -16,22 +17,46 @@ export class View {
     this.$canvas[0].height = this.h;
   }
 
-  drawScaleY() {
+  drawAxises() {
     this.context.beginPath();
-    this.context.moveTo(0, this.h);
-    this.context.lineTo(this.w, this.h);
+    this.context.moveTo(this.w * 0.1, 0);
+    this.context.lineTo(this.w * 0.1, this.h * 0.85);
+    this.context.stroke();
+    this.context.beginPath();
+    this.context.moveTo(this.w * 0.15, this.h * 0.9);
+    this.context.lineTo(this.w, this.h * 0.9);
     this.context.stroke();
   }
 
-  addDelimiters() {
-    const lngt = this.w / this.data.x.categories.length;
-    for (let i = 0; i < this.data.x.categories.length; i++) {
-      const x = i === 0 ? lngt / 2 : lngt * i + lngt / 2;
+  addDelimitersY() {
+    let arr = [];
+    this.data.series.forEach((el, i) => {
+      arr = [...arr, ...el.data];
+    });
+    const max = Math.max(...arr);
+    const min = Math.min(...arr);
+    const diapason = max - min;
+    for (let i = 0; i < 10; i++) {
+      const offset = this.h * 0.85 - i * this.h * 0.85 / 10;
       this.context.beginPath();
-      this.context.moveTo(x, this.h);
-      this.context.fillText(this.data.x.categories[i], x, this.h - this.h * 0.06);
-      this.context.lineTo(x, this.h - this.h * 0.05);
+      this.context.moveTo(this.w * 0.1, offset);
+      this.context.lineTo(this.w * 0.08, offset);
       this.context.stroke();
+      this.context.textAlign = 'center';
+      this.context.fillText(min + diapason * (0.1 * (i + 1)), this.w * 0.05, offset);
+    }
+  }
+
+  addDelimitersX() {
+    for (let i = 0; i < this.data.x.categories.length; i++) {
+      const offset = (this.w - this.w * 0.15) / this.data.x.categories.length;
+
+      this.context.beginPath();
+      this.context.moveTo(this.w * 0.15 + offset * i, this.h * 0.9);
+      this.context.lineTo(this.w * 0.15 + offset * i, this.h * 0.95);
+      this.context.stroke();
+      this.context.textAlign = 'center';
+      this.context.fillText(this.data.x.categories[i], this.w * 0.15 + offset * i, this.h * 0.95 + 10);
     }
   }
 }
