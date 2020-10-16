@@ -131,4 +131,21 @@ export class View {
       radius < 10 ? this.$tip.text(el.val) : 0;
     });
   }
+
+  drawScaleX({ startIndex, endIndex }) {
+    this.context.clearRect(this.w * 0.15 - 10, this.h * 0.9, this.w, this.h);
+    for (let i = startIndex; i < endIndex; i++) {
+      const offset = (this.w - this.w * 0.15) / (endIndex - startIndex);
+      this.context.beginPath();
+      this.context.moveTo(this.w * 0.15 + offset * (i - startIndex), this.h * 0.9);
+      this.context.lineTo(this.w * 0.15 + offset * (i - startIndex), this.h * 0.95);
+      this.context.stroke();
+      this.context.textAlign = 'center';
+      this.context.fillText(
+        this.data.x.categories[i],
+        this.w * 0.15 + offset * (i - startIndex),
+        this.h * 0.95 + 10,
+      );
+    }
+  }
 }

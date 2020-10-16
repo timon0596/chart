@@ -9,7 +9,8 @@ export class Controller {
     this.handleCanvasMousemove = this.handleCanvasMousemove.bind(this);
     this.view.$canvas.mousemove(this.handleCanvasMousemove);
     $(this.view.slider).on('chart-scale-change', (e) => {
-      console.log(e.pos);
+      const o = this.model.scaleFromTo(e.pos);
+      this.view.drawScaleX(o);
     });
   }
 

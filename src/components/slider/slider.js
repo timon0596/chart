@@ -1,7 +1,5 @@
 export class Slider {
   constructor() {
-    this.distance = 0;
-    this.segment = 0;
     this.pos = [0, 1];
     this.mousedown = false;
     this.currentHandle = 0;
@@ -29,7 +27,6 @@ export class Slider {
         ? this.el[0].offsetWidth : x < 0
           ? 0 : x;
       this.handles[this.currentHandle].css('left', `${x}px`);
-      this.computeDistance();
       this.computePos(this.currentHandle);
       const event = $.Event('chart-scale-change');
       event.pos = {
@@ -40,15 +37,11 @@ export class Slider {
     }
   }
 
-  computeDistance() {
-    this.distance = Math.abs(this.handles[0][0].getBoundingClientRect().left
-     - this.handles[1][0].getBoundingClientRect().left);
-    this.segment = this.distance / this.el[0].getBoundingClientRect().width;
-  }
-
   computePos(i) {
-    this.pos[i] = (this.handles[i][0].getBoundingClientRect().left
-        - this.el[0].getBoundingClientRect().left) / this.el[0].getBoundingClientRect().width;
+    const h = this.handles[i][0].getBoundingClientRect();
+    const el = this.el[0].getBoundingClientRect();
+    this.pos[i] = (h.left + h.width / 2
+        - el.left) / el.width;
     this.pos[i] = this.pos[i] < 0 ? 0 : this.pos[i];
   }
 }
