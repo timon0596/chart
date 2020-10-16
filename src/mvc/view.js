@@ -1,3 +1,5 @@
+import { Slider } from '../components/slider/slider.js';
+
 export class View {
   constructor(data) {
     this.data = data;
@@ -6,11 +8,22 @@ export class View {
     this.diapason;
     this.colors = new Set();
     this.dataCoords = [];
+
+    this.slider = new Slider();
+    this.$tip = $('<div>', { class: 'tip' });
     this.$canvas = $('<canvas>');
-    this.data.$root.append(this.$canvas);
+    this.$wrapper = $('<div>', { class: 'wrapper' });
+    this.$mainwrapper = $('<div>', { class: 'mainwrapper' });
+
+    this.data.$root.append(this.$mainwrapper);
+    this.$mainwrapper.append(this.$wrapper);
+    this.$wrapper.append(this.$canvas);
+    this.$mainwrapper.append(this.$tip);
+    this.$mainwrapper.append(this.slider.el);
+
     this.context = this.$canvas[0].getContext('2d');
-    this.w = this.data.$root[0].offsetWidth;
-    this.h = this.data.$root[0].offsetHeight;
+    this.w = this.$wrapper[0].offsetWidth;
+    this.h = this.$wrapper[0].offsetHeight;
     this.offsetX = (this.w - this.w * 0.15) / this.data.x.categories.length;
     this.generateColor();
     this.minmaxData();
@@ -81,12 +94,14 @@ export class View {
   }
 
   drawChart({ data, index }) {
+    this.context.beginPath();
     data.forEach((el, i) => {
       const y = this.h * 0.85
       - ((el - this.min) / this.diapason * this.h * 0.8);
       if (data[i + 1] !== undefined) {
         const nextY = this.h * 0.85
         - ((data[i + 1] - this.min) / this.diapason * this.h * 0.8);
+        this.context.beginPath();
         this.context.moveTo(this.w * 0.15 + this.offsetX * i, y);
         this.context.lineTo(this.w * 0.15 + this.offsetX * (i + 1), nextY);
         this.context.strokeStyle = this.colors[index];
@@ -105,5 +120,15 @@ export class View {
       this.colors.add(`rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`);
     }
     this.colors = Array.from(this.colors);
+  }
+
+  pointIntersection({ x, y }) {
+    const br = this.$canvas[0].getBoundingClientRect();
+    this.dataCoords.forEach((el) => {
+      const xx = el.x + br.x;
+      const yy = el.y + br.y;
+      const radius = Math.sqrt((xx - x) ** 2 + (yy - y) ** 2);
+      radius < 10 ? this.$tip.text(el.val) : 0;
+    });
   }
 }

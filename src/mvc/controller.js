@@ -6,5 +6,16 @@ export class Controller {
     this.view = new View(data);
     this.model = new Model(data);
     this.data = data;
+    this.handleCanvasMousemove = this.handleCanvasMousemove.bind(this);
+    this.view.$canvas.mousemove(this.handleCanvasMousemove);
+    $(this.view.slider).on('chart-scale-change', (e) => {
+      console.log(e.pos);
+    });
+  }
+
+  handleCanvasMousemove(e) {
+    const x = e.pageX;
+    const y = e.pageY;
+    this.view.pointIntersection({ x, y });
   }
 }
