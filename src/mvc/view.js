@@ -32,12 +32,12 @@ export class View {
     this.axisX();
     this.addDelimitersX();
     this.addDelimitersY();
-    this.drawCharts();
   }
 
-  drawCharts() {
+  drawCharts(o) {
+    this.context.clearRect(this.w * 0.1, 0, this.w, this.h * 0.9 - 2);
     this.data.series.forEach((el, i) => {
-      this.drawChart({ data: el.data, index: i });
+      this.drawChart({ data: el.data, index: i, ...o });
     });
   }
 
@@ -93,23 +93,30 @@ export class View {
     }
   }
 
-  drawChart({ data, index }) {
+  drawChart({
+    data, index, startIndex, endIndex,
+  }) {
     this.context.beginPath();
-    data.forEach((el, i) => {
+    const arr = data.slice(startIndex, endIndex);
+    console.log(startIndex);
+    console.log(endIndex);
+    console.log(arr);
+    arr.forEach((el, i) => {
       const y = this.h * 0.85
       - ((el - this.min) / this.diapason * this.h * 0.8);
-      if (data[i + 1] !== undefined) {
+      const offset = (this.w - this.w * 0.15) / (endIndex - startIndex);
+      if (arr[i + 1] !== undefined) {
         const nextY = this.h * 0.85
-        - ((data[i + 1] - this.min) / this.diapason * this.h * 0.8);
+        - ((arr[i + 1] - this.min) / this.diapason * this.h * 0.8);
         this.context.beginPath();
-        this.context.moveTo(this.w * 0.15 + this.offsetX * i, y);
-        this.context.lineTo(this.w * 0.15 + this.offsetX * (i + 1), nextY);
+        this.context.moveTo(this.w * 0.15 + offset * i, y);
+        this.context.lineTo(this.w * 0.15 + offset * (i + 1), nextY);
         this.context.strokeStyle = this.colors[index];
         this.context.stroke();
       }
       this.context.beginPath();
-      this.context.arc(this.w * 0.15 + this.offsetX * i, y, 5, 0, 2 * Math.PI);
-      this.dataCoords.push({ x: this.w * 0.15 + this.offsetX * i, y, val: el });
+      this.context.arc(this.w * 0.15 + offset * i, y, 5, 0, 2 * Math.PI);
+      this.dataCoords.push({ x: this.w * 0.15 + offset * i, y, val: el });
       this.context.fillStyle = this.colors[index];
       this.context.fill();
     });

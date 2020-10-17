@@ -11,7 +11,9 @@ export class Controller {
     $(this.view.slider).on('chart-scale-change', (e) => {
       const o = this.model.scaleFromTo(e.pos);
       this.view.drawScaleX(o);
+      this.view.drawCharts(o);
     });
+    this.view.drawCharts({ startIndex: 0, endIndex: this.data.x.categories.length - 1 });
   }
 
   handleCanvasMousemove(e) {
