@@ -7,7 +7,7 @@ export class View {
     this.max;
     this.diapason;
     this.colors = new Set();
-    this.dataCoords = [];
+    this.dataCoords = new Array(this.data.series.length).fill(0).map(() => []);
 
     this.slider = new Slider();
     this.$tip = $('<div>', { class: 'tip' });
@@ -29,12 +29,12 @@ export class View {
     this.minmaxData();
     this.drawCanvas();
     this.axisY();
-    this.axisX();
-    this.addDelimitersX();
     this.addDelimitersY();
+    this.axisX();
   }
 
   drawCharts(o) {
+    this.dataCoords = new Array(this.data.series.length).fill(0).map(() => []);
     this.context.clearRect(this.w * 0.1, 0, this.w, this.h * 0.9 - 2);
     this.data.series.forEach((el, i) => {
       this.drawChart({ data: el.data, index: i, ...o });
@@ -82,25 +82,11 @@ export class View {
     }
   }
 
-  addDelimitersX() {
-    for (let i = 0; i < this.data.x.categories.length; i++) {
-      this.context.beginPath();
-      this.context.moveTo(this.w * 0.15 + this.offsetX * i, this.h * 0.9);
-      this.context.lineTo(this.w * 0.15 + this.offsetX * i, this.h * 0.95);
-      this.context.stroke();
-      this.context.textAlign = 'center';
-      this.context.fillText(this.data.x.categories[i], this.w * 0.15 + this.offsetX * i, this.h * 0.95 + 10);
-    }
-  }
-
   drawChart({
     data, index, startIndex, endIndex,
   }) {
     this.context.beginPath();
     const arr = data.slice(startIndex, endIndex);
-    console.log(startIndex);
-    console.log(endIndex);
-    console.log(arr);
     arr.forEach((el, i) => {
       const y = this.h * 0.85
       - ((el - this.min) / this.diapason * this.h * 0.8);
@@ -116,9 +102,17 @@ export class View {
       }
       this.context.beginPath();
       this.context.arc(this.w * 0.15 + offset * i, y, 5, 0, 2 * Math.PI);
-      this.dataCoords.push({ x: this.w * 0.15 + offset * i, y, val: el });
+      this.dataCoords[index].push({ x: (this.w * 0.15 + offset * i), y, val: el });
       this.context.fillStyle = this.colors[index];
       this.context.fill();
+      this.context.beginPath();
+      this.context.textAlign = 'center';
+      this.context.fillStyle = '#000';
+      this.context.fillText(
+        this.dataCoords[index][i].val,
+        this.w * 0.15 + offset * i,
+        y - 2,
+      );
     });
   }
 
@@ -131,23 +125,29 @@ export class View {
 
   pointIntersection({ x, y }) {
     const br = this.$canvas[0].getBoundingClientRect();
-    this.dataCoords.forEach((el) => {
-      const xx = el.x + br.x;
-      const yy = el.y + br.y;
-      const radius = Math.sqrt((xx - x) ** 2 + (yy - y) ** 2);
-      radius < 10 ? this.$tip.text(el.val) : 0;
+    this.dataCoords.forEach((arr) => {
+      arr.forEach((el) => {
+        const xx = el.x + br.x;
+        const yy = el.y + br.y;
+        const radius = Math.sqrt((xx - x) ** 2 + (yy - y) ** 2);
+        radius < 6 ? this.$tip.text(el.val) : 0;
+      });
     });
   }
 
   drawScaleX({ startIndex, endIndex }) {
     this.context.clearRect(this.w * 0.15 - 10, this.h * 0.9, this.w, this.h);
+    const offset = (this.w - this.w * 0.15) / (endIndex - startIndex);
+    const multiplicity = 1;
+
     for (let i = startIndex; i < endIndex; i++) {
-      const offset = (this.w - this.w * 0.15) / (endIndex - startIndex);
       this.context.beginPath();
       this.context.moveTo(this.w * 0.15 + offset * (i - startIndex), this.h * 0.9);
       this.context.lineTo(this.w * 0.15 + offset * (i - startIndex), this.h * 0.95);
+      this.context.strokeStyle = '#000';
       this.context.stroke();
       this.context.textAlign = 'center';
+      this.context.fillStyle = '#000';
       this.context.fillText(
         this.data.x.categories[i],
         this.w * 0.15 + offset * (i - startIndex),

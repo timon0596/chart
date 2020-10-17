@@ -13,7 +13,8 @@ export class Controller {
       this.view.drawScaleX(o);
       this.view.drawCharts(o);
     });
-    this.view.drawCharts({ startIndex: 0, endIndex: this.data.x.categories.length - 1 });
+    this.view.drawScaleX({ startIndex: 0, endIndex: this.data.x.categories.length });
+    this.view.drawCharts({ startIndex: 0, endIndex: this.data.x.categories.length });
   }
 
   handleCanvasMousemove(e) {
