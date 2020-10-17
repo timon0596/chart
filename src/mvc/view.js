@@ -106,7 +106,6 @@ export class View {
       this.context.fillStyle = this.colors[index];
       this.context.fill();
     });
-    console.log(this.dataCoords[index]);
   }
 
   generateColor() {
@@ -134,9 +133,17 @@ export class View {
   drawScaleX({ startIndex, endIndex }) {
     this.context.clearRect(this.w * 0.15 - 10, this.h * 0.9, this.w, this.h);
     const offset = (this.w - this.w * 0.15) / (endIndex - startIndex);
-    const multiplicity = 1;
+    let offset2 = (this.w - this.w * 0.15) / (endIndex - startIndex);
+    let multiplicity = 1;
+    while (offset2 < (this.w - this.w * 0.15) / 20) {
+      offset2 += (this.w - this.w * 0.15) / (endIndex - startIndex);
+      multiplicity += 1;
+    }
 
     for (let i = startIndex; i < endIndex; i++) {
+      if ((i + 1 - startIndex) % multiplicity !== 0) {
+        continue;
+      }
       this.context.beginPath();
       this.context.moveTo(this.w * 0.15 + offset * (i - startIndex), this.h * 0.9);
       this.context.lineTo(this.w * 0.15 + offset * (i - startIndex), this.h * 0.95);
