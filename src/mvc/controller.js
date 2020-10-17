@@ -6,8 +6,8 @@ export class Controller {
     this.view = new View(data);
     this.model = new Model(data);
     this.data = data;
-    this.handleCanvasMousemove = this.handleCanvasMousemove.bind(this);
-    this.view.$canvas.mousemove(this.handleCanvasMousemove);
+    this.handleWindowMousemove = this.handleWindowMousemove.bind(this);
+    $(window).mousemove(this.handleWindowMousemove);
     $(this.view.slider).on('chart-scale-change', (e) => {
       const o = this.model.scaleFromTo(e.pos);
       this.view.drawScaleX(o);
@@ -17,7 +17,7 @@ export class Controller {
     this.view.drawCharts({ startIndex: 0, endIndex: this.data.x.categories.length });
   }
 
-  handleCanvasMousemove(e) {
+  handleWindowMousemove(e) {
     const x = e.pageX;
     const y = e.pageY;
     this.view.pointIntersection({ x, y });

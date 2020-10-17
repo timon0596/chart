@@ -105,15 +105,8 @@ export class View {
       this.dataCoords[index].push({ x: (this.w * 0.15 + offset * i), y, val: el });
       this.context.fillStyle = this.colors[index];
       this.context.fill();
-      this.context.beginPath();
-      this.context.textAlign = 'center';
-      this.context.fillStyle = '#000';
-      this.context.fillText(
-        this.dataCoords[index][i].val,
-        this.w * 0.15 + offset * i,
-        y - 2,
-      );
     });
+    console.log(this.dataCoords[index]);
   }
 
   generateColor() {
@@ -126,12 +119,15 @@ export class View {
   pointIntersection({ x, y }) {
     const br = this.$canvas[0].getBoundingClientRect();
     this.dataCoords.forEach((arr) => {
-      arr.forEach((el) => {
-        const xx = el.x + br.x;
-        const yy = el.y + br.y;
+      for (let i = 0; i < arr.length; i++) {
+        const xx = arr[i].x + br.x;
+        const yy = arr[i].y + br.y;
         const radius = Math.sqrt((xx - x) ** 2 + (yy - y) ** 2);
-        radius < 6 ? this.$tip.text(el.val) : 0;
-      });
+        if (radius < 6) {
+          this.$tip.text(arr[i].val);
+          break;
+        }
+      }
     });
   }
 
