@@ -22,7 +22,7 @@ export class Controller {
   handleWindowMousemove(e) {
     const x = e.pageX;
     const y = e.pageY;
-    this.view.pointIntersection({ x, y });
+    this.view.pointIntersection({ x, y, e });
   }
 
   handleWindowResize() {

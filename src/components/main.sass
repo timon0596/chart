@@ -20,13 +20,13 @@ canvas
 .slider
   position: relative
   display: block
-  height: 30px
+  height: 10px
   width: 100%
 .handle
   position: absolute
   left: 0
   top: 0
-  height: 30px
+  height: 10px
   width: 30px
   background: #000
   transform: translate(-50%, 0)
@@ -36,17 +36,12 @@ canvas
   left: 100%
 .tip
   display: block
-  position: absolute
-  width: 100px
-  height: 100px
+  position: fixed 
   right: 0
   top: 0
-.nameY
-  position: absolute
-  left: 0
-  top: 5%
-  transform-origin: 100% 0
-  transform: translate(-100%,0) rotate(-90deg) 
+  width: min-content
+  background: rgba(255,255,255,1)
+  transform: translate(0, -100%)
 .nameX
   display: flex
   justify-content: center

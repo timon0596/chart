@@ -19,11 +19,10 @@ export class View {
     this.$wrapper = $('<div>', { class: 'wrapper' });
     this.$mainwrapper = $('<div>', { class: 'mainwrapper' });
 
-    this.$nameX.text(this.data.x.title);
-    this.$nameY.text(this.data.y.title);
-
+    this.$nameX.append('x: ').append(this.data.x.title);
+    this.$nameY.append('y: ').append(this.data.y.title);
+    this.data.$root.append(this.$nameY);
     this.data.$root.append(this.$mainwrapper);
-    this.$mainwrapper.append(this.$nameY);
     this.$mainwrapper.append(this.$wrapper);
     this.$wrapper.append(this.$canvas);
     this.$mainwrapper.append(this.$tip);
@@ -116,7 +115,18 @@ export class View {
   }
 
   addDelimitersY() {
+    const exponent = ['Т', 'М'];
+
     for (let i = 0; i < 10; i++) {
+      let divider = 1000;
+      let order = 0;
+      let value = (this.min + i * this.diapason / 9).toFixed(2);
+      while (value / divider > 1) {
+        divider *= divider;
+        order++;
+      }
+      divider /= 1000;
+      value = exponent[order - 1] ? ((value / (1000 ** order)).toFixed(1) + exponent[order - 1]) : value;
       const offset = this.h * 0.85 - i * this.h * 0.8 / 9;
       this.context.beginPath();
       this.context.moveTo(this.w * 0.1, offset);
@@ -124,7 +134,7 @@ export class View {
       this.context.stroke();
       this.context.font = this.h * 0.01 > 3 ? `${3}px` : `${this.h * 0.01}px`;
       this.context.textAlign = 'center';
-      this.context.fillText((this.min + i * this.diapason / 9).toFixed(2), this.w * 0.05, offset);
+      this.context.fillText(value, this.w * 0.05, offset);
     }
   }
 
@@ -156,7 +166,7 @@ export class View {
 
   generateColor() {
     while (this.colors.size < this.data.series.length) {
-      this.colors.add(`rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`);
+      this.colors.add(`rgba(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},1)`);
     }
     this.colors = Array.from(this.colors);
     this.$chartNameColorsArray.forEach((el, i) => {
@@ -164,19 +174,28 @@ export class View {
     });
   }
 
-  pointIntersection({ x, y }) {
+  pointIntersection({ x, y, e }) {
     const br = this.$canvas[0].getBoundingClientRect();
-    this.dataCoords.forEach((arr) => {
-      for (let i = 0; i < arr.length; i++) {
-        const xx = arr[i].x + br.x;
-        const yy = arr[i].y + br.y;
+    let isIntersected = false;
+    for (let index = 0; index < this.dataCoords.length; index++) {
+      for (let i = 0; i < this.dataCoords[index].length; i++) {
+        const xx = this.dataCoords[index][i].x + br.x;
+        const yy = this.dataCoords[index][i].y + br.y;
         const radius = Math.sqrt((xx - x) ** 2 + (yy - y) ** 2);
         if (radius < this.pointRadius + 1) {
-          this.$tip.text(arr[i].val);
+          this.$tip.text(this.dataCoords[index][i].val);
+          isIntersected = true;
+          this.$tip.css('left', `${e.clientX}px`);
+          this.$tip.css('top', `${e.clientY}px`);
           break;
         }
       }
-    });
+      if (isIntersected) {
+        break;
+      } else {
+        this.$tip.text('');
+      }
+    }
   }
 
   drawScaleX({ startIndex, endIndex }) {
@@ -184,7 +203,7 @@ export class View {
     const offset = (this.w - this.w * 0.025 - this.w * 0.15) / (endIndex - startIndex);
     let offset2 = (this.w - this.w * 0.025 - this.w * 0.15) / (endIndex - startIndex);
     let multiplicity = 1;
-    while (offset2 < (this.w - this.w * 0.025 - this.w * 0.15) / 20) {
+    while (offset2 < 20) {
       offset2 += (this.w - this.w * 0.025 - this.w * 0.15) / (endIndex - startIndex);
       multiplicity += 1;
     }
