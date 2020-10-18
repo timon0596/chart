@@ -21,12 +21,12 @@ export class Slider {
 
   handleSliderMousemove(e) {
     if (this.mousedown) {
-      let x = e.pageX - this.el[0].getBoundingClientRect().left;
+      let x = (e.pageX - this.el[0].getBoundingClientRect().left) / this.el[0].getBoundingClientRect().width * 100;
 
-      x = x > this.el[0].offsetWidth
-        ? this.el[0].offsetWidth : x < 0
+      x = x > 100
+        ? 100 : x < 0
           ? 0 : x;
-      this.handles[this.currentHandle].css('left', `${x}px`);
+      this.handles[this.currentHandle].css('left', `${x}%`);
       this.computePos(this.currentHandle);
       const event = $.Event('chart-scale-change');
       event.pos = {

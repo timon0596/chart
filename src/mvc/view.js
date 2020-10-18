@@ -54,6 +54,23 @@ export class View {
     this.axisX();
   }
 
+  render() {
+    this.defineSizes();
+    this.definePointRadius(this.data.x.categories.length);
+    this.generateColor();
+    this.minmaxData();
+    this.drawCanvas();
+    this.axisY();
+    this.addDelimitersY();
+    this.axisX();
+  }
+
+  defineSizes() {
+    this.w = this.$wrapper[0].offsetWidth;
+    this.h = this.$wrapper[0].offsetHeight;
+    this.offsetX = (this.w - this.w * 0.15) / this.data.x.categories.length;
+  }
+
   definePointRadius(lngt) {
     this.pointRadius = this.h / lngt;
     this.pointRadius = this.pointRadius > 5 ? 5 : this.pointRadius;
@@ -84,7 +101,7 @@ export class View {
   axisX() {
     this.context.beginPath();
     this.context.moveTo(this.w * 0.15, this.h * 0.9);
-    this.context.lineTo(this.w, this.h * 0.9);
+    this.context.lineTo(this.w - this.w * 0.025, this.h * 0.9);
     this.context.stroke();
   }
 
@@ -119,7 +136,7 @@ export class View {
     arr.forEach((el, i) => {
       const y = this.h * 0.85
       - ((el - this.min) / this.diapason * this.h * 0.8);
-      const offset = (this.w - this.w * 0.15) / (endIndex - startIndex);
+      const offset = (this.w - this.w * 0.025 - this.w * 0.15) / (endIndex - startIndex);
       if (arr[i + 1] !== undefined) {
         const nextY = this.h * 0.85
         - ((arr[i + 1] - this.min) / this.diapason * this.h * 0.8);
@@ -164,11 +181,11 @@ export class View {
 
   drawScaleX({ startIndex, endIndex }) {
     this.context.clearRect(this.w * 0.15 - 10, this.h * 0.9, this.w, this.h);
-    const offset = (this.w - this.w * 0.15) / (endIndex - startIndex);
-    let offset2 = (this.w - this.w * 0.15) / (endIndex - startIndex);
+    const offset = (this.w - this.w * 0.025 - this.w * 0.15) / (endIndex - startIndex);
+    let offset2 = (this.w - this.w * 0.025 - this.w * 0.15) / (endIndex - startIndex);
     let multiplicity = 1;
-    while (offset2 < (this.w - this.w * 0.15) / 20) {
-      offset2 += (this.w - this.w * 0.15) / (endIndex - startIndex);
+    while (offset2 < (this.w - this.w * 0.025 - this.w * 0.15) / 20) {
+      offset2 += (this.w - this.w * 0.025 - this.w * 0.15) / (endIndex - startIndex);
       multiplicity += 1;
     }
 
