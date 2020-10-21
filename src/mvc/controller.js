@@ -1,4 +1,4 @@
-import { View } from './view';
+import { View } from './view2';
 import { Model } from './model';
 
 export class Controller {
@@ -8,30 +8,17 @@ export class Controller {
     this.data = data;
     this.handleWindowMousemove = this.handleWindowMousemove.bind(this);
     this.handleWindowResize = this.handleWindowResize.bind(this);
-    $(window).resize(this.handleWindowResize);
-    $(window).mousemove(this.handleWindowMousemove);
-    $(this.view.slider).on('chart-scale-change', (e) => {
-      const o = this.model.scaleFromTo(e.pos);
-      this.view.drawScaleX(o);
-      this.view.drawCharts(o);
+    $(this.view.canvas).click(() => {
+      this.view.clearChart();
     });
-    this.view.drawScaleX({ startIndex: 0, endIndex: this.data.x.categories.length });
-    this.view.drawCharts({ startIndex: 0, endIndex: this.data.x.categories.length });
   }
 
   handleWindowMousemove(e) {
     const x = e.pageX;
     const y = e.pageY;
-    this.view.pointIntersection({ x, y, e });
   }
 
   handleWindowResize() {
-    this.view.render();
-    const o = this.model.scaleFromTo({
-      start: Math.min(...this.view.slider.pos),
-      end: Math.max(...this.view.slider.pos),
-    });
-    this.view.drawScaleX(o);
-    this.view.drawCharts(o);
+
   }
 }

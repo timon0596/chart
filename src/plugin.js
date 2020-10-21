@@ -5,7 +5,7 @@ import { Controller } from './mvc/controller';
     coords() {
       const $this = $(this);
       const chart = $this.data('myChart');
-      return chart.chart.view.dataCoords;
+      return chart.chart.view.dataArrays;
     },
     init(options) {
       return this.each(function () {

@@ -5,7 +5,3 @@ import './plugin.js';
 
 require.context('./components', true, /\.sass$/);
 const coords = $('.root').myChart(config);
-$(window).click(() => {
-  const arr = $('.root').myChart('coords');
-  console.log(arr);
-});
