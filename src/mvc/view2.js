@@ -195,15 +195,20 @@ export class View {
     if (j > 0) {
       const prevY = this.Yend.y - ((data[i - 1] - this.min) / this.diapason * this.Yheight);
       const prevX = this.Xstart.x + offset * (j - 1);
-      this.context.lineTo(x, y);
+      this.context.beginPath();
+      this.context.moveTo(x, y);
+      this.context.lineTo(prevX, prevY);
       this.context.strokeStyle = this.colors[index];
       this.context.stroke();
+      this.context.closePath();
     }
-    this.context.beginPath();
-    this.context.arc(x, y, this.pointRadius, 0, 2 * Math.PI);
-    this.dataCoords[index].push({ x, y, val: data[i] });
-    this.context.fillStyle = this.colors[index];
-    this.context.fill();
+    if (this.pointRadius > 1.5) {
+      this.context.beginPath();
+      this.context.arc(x, y, this.pointRadius, 0, 2 * Math.PI);
+      this.dataCoords[index].push({ x, y, val: data[i] });
+      this.context.fillStyle = this.colors[index];
+      this.context.fill();
+    }
   }
 
   definePointRadius(lngt) {
