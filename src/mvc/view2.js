@@ -41,7 +41,17 @@ export class View {
     this.Yheight;
     this.axisesCoordinates;
     this.pointRadius = 2;
-    this.init();
+    !this.data.diapason.full ? this.init()
+      : this.asyncInit();
+  }
+
+  init() {
+    this.generateColor();
+    this.elementsInit();
+    this.defineSizes(this.canvasWrapper[0].getBoundingClientRect());
+    this.canvasResize();
+    this.minmaxData();
+    this.renderAxises(this.axisesCoordinates);
     $(this.chunkSlider).on('chart-scale-change', (e) => {
       const statrtEndIndexes = this.getIndexesDiapason({ pos: e.pos, diapason: this.sectionEndIndex - this.sectionStartIndex });
       this.sectionChunkStartIndex = statrtEndIndexes.startIndex;
@@ -58,20 +68,10 @@ export class View {
       this.startIndex = this.sectionChunkStartIndex + this.sectionStartIndex;
       this.endIndex = this.sectionChunkEndIndex + this.sectionStartIndex;
       this.renderAllCharts({ startIndex: this.startIndex, endIndex: this.endIndex });
-      console.log(this.startIndex, this.endIndex);
     });
     this.sectionSlider.setChunkHandle(0);
     this.chunkSlider.setHandle({ i: 0, position: 0 });
     this.chunkSlider.setHandle({ i: 1, position: 5 });
-  }
-
-  init() {
-    this.generateColor();
-    this.elementsInit();
-    this.defineSizes(this.canvasWrapper[0].getBoundingClientRect());
-    this.canvasResize();
-    this.minmaxData();
-    this.renderAxises(this.axisesCoordinates);
   }
 
   reRender() {
@@ -81,15 +81,32 @@ export class View {
     this.renderAllCharts({ startIndex: this.startIndex, endIndex: this.endIndex });
   }
 
+  asyncInit() {
+    this.generateColor();
+    this.elementsInit();
+    this.defineSizes(this.canvasWrapper[0].getBoundingClientRect());
+    this.canvasResize();
+    this.minmaxData();
+    this.renderAxises(this.axisesCoordinates);
+    this.startIndex = 0;
+    this.endIndex = this.maxDataArrayLength;
+    this.renderAllCharts({ startIndex: this.startIndex, endIndex: this.endIndex });
+  }
+
+  mainWrapperAppending() {
+    this.data.diapason.full ? this.mainWrapper.addClass('mainWrapper_full') : 0;
+    this.mainWrapper.append(this.canvasWrapper);
+    !this.data.diapason.full ? this.mainWrapper.append(this.sectionSlider.el) : 0;
+    !this.data.diapason.full ? this.mainWrapper.append(this.chunkSlider.el) : 0;
+    this.mainWrapper.append(this.chartnames);
+  }
+
   elementsInit() {
     this.canvasWrapper
       .append(this.canvas);
 
-    this.mainWrapper
-      .append(this.canvasWrapper)
-      .append(this.sectionSlider.el)
-      .append(this.chunkSlider.el)
-      .append(this.chartnames);
+    this.mainWrapperAppending();
+
     this.canvasWrapper.append(this.$tip);
     this.chunkSlider.el.css('margin-top', '5px');
     this.data.$root.append(this.mainWrapper);
@@ -102,7 +119,6 @@ export class View {
         this.chartnames.append(chartname.container);
         return chartname;
       });
-    console.log(this.chartnamesArray);
   }
 
   defineSizes(wrapperBoundingRect) {
@@ -229,7 +245,7 @@ export class View {
       setTimeout((param) => {
         for (let i = 0; i < chunkLength; i++) {
           setTimeout(this.drawPoint.bind($this), 0, {
-            data, index, i: chunkLength * j + i, offset,
+            data, index, i: chunkLength * j + i, offset, j: i + j * chunkLength,
           });
         }
       }, 0, j);
@@ -265,7 +281,7 @@ export class View {
         data, index, startIndex, endIndex,
       };
 
-      this.renderChart(drawChartParametres);
+      this.data.diapason.full ? this.renderChartAsync(drawChartParametres) : this.renderChart(drawChartParametres);
     });
     this.addDelimitersX({ startIndex, endIndex });
   }
