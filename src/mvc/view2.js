@@ -24,6 +24,7 @@ export class View {
     this.chunkSlider = new Slider(false);
     this.canvas = $('<canvas>');
     this.canvas2 = $('<canvas>');
+    this.$tip = $('<div>', { class: 'tip' });
     this.canvasWrapper = $('<div>', { class: 'canvasWrapper' });
     this.context = this.canvas[0].getContext('2d');
     this.elementsInit();
@@ -74,6 +75,7 @@ export class View {
     this.canvasWrapper.append(this.canvas);
     this.canvasWrapper.append(this.sectionSlider.el);
     this.canvasWrapper.append(this.chunkSlider.el);
+    this.canvasWrapper.append(this.$tip);
     this.chunkSlider.el.css('margin-top', '5px');
     this.data.$root.append(this.canvasWrapper);
   }
@@ -135,16 +137,29 @@ export class View {
     this.diapason = this.max - this.min;
   }
 
-  // addDelimitersY(axis) {
-  //   this.context.beginPath();
-  //   this.context.font = this.h * 0.01 > 3 ? `${3}px` : `${this.h * 0.01}px`;
-  //   this.context.textAlign = 'center';
-  //   this.context.fillText(this.max, axis.start.x - 10, axis.start.y);
-  //   this.context.beginPath();
-  //   this.context.font = this.h * 0.01 > 3 ? `${3}px` : `${this.h * 0.01}px`;
-  //   this.context.textAlign = 'center';
-  //   this.context.fillText(this.min, axis.end.x - 10, axis.end.y);
-  // }
+  pointIntersection({ x, y, e }) {
+    const br = this.canvas[0].getBoundingClientRect();
+    let isIntersected = false;
+    for (let index = 0; index < this.dataCoords.length; index++) {
+      for (let i = 0; i < this.dataCoords[index].length; i++) {
+        const xx = this.dataCoords[index][i].x + br.x;
+        const yy = this.dataCoords[index][i].y + br.y;
+        const radius = Math.sqrt((xx - x) ** 2 + (yy - y) ** 2);
+        if (radius < this.pointRadius + 1) {
+          this.$tip.text(this.dataCoords[index][i].val);
+          isIntersected = true;
+          this.$tip.css('left', `${e.clientX}px`);
+          this.$tip.css('top', `${e.clientY}px`);
+          break;
+        }
+      }
+      if (isIntersected) {
+        break;
+      } else {
+        this.$tip.text('');
+      }
+    }
+  }
 
   drawPoint({
     data, index, i, offset, j,
@@ -164,6 +179,12 @@ export class View {
     this.dataCoords[index].push({ x, y, val: data[i] });
     this.context.fillStyle = this.colors[index];
     this.context.fill();
+  }
+
+  definePointRadius(lngt) {
+    this.pointRadius = this.canvasHeight / lngt;
+    this.pointRadius = this.pointRadius > 5 ? 5 : this.pointRadius;
+    this.pointRadius = this.pointRadius < 1 ? 1 : this.pointRadius;
   }
 
   renderChartAsync({
@@ -204,12 +225,12 @@ export class View {
   }
 
   renderAllCharts({ startIndex, endIndex }) {
+    this.dataCoords = new Array(this.data.series.length).fill(0).map(() => []);
+    this.definePointRadius(endIndex - startIndex);
     this.clearChart();
     // const pointsAmount = this.dataArrays.reduce((a, el) => a.length + el.length);
 
     // const chunkLength = this.maxDataArrayLength / this.chunkSections;
-    console.log(startIndex);
-    console.log(endIndex);
     this.dataArrays.forEach((data, index) => {
       const drawChartParametres = {
         data, index, startIndex, endIndex,

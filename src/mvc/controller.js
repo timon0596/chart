@@ -9,13 +9,17 @@ export class Controller {
     this.handleWindowMousemove = this.handleWindowMousemove.bind(this);
     this.handleWindowResize = this.handleWindowResize.bind(this);
     $(this.view.canvas).click(() => {
-      this.view.clearChart();
+      console.log(this.view.dataCoords);
     });
+    $(window).on('mousemove.intersection', this.handleWindowMousemove);
   }
 
   handleWindowMousemove(e) {
     const x = e.pageX;
     const y = e.pageY;
+    if (this.view.pointRadius >= 3) {
+      this.view.pointIntersection({ x, y, e });
+    }
   }
 
   handleWindowResize() {
