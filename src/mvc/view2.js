@@ -15,10 +15,10 @@ export class View {
     this.sectionChunkEndIndex;
     this.startIndex;
     this.endIndex;
-    this.sectionDiapason = 10000;
     this.chunks = 100;
     this.dataArrays = this.data.series.map((el) => el.data);
     this.maxDataArrayLength = this.dataArrays.reduce((a, el) => Math.max(a.length, el.length));
+    this.sectionDiapason = this.maxDataArrayLength < 10000 ? this.maxDataArrayLength : 10000;
     this.colors = new Set();
     this.dataCoords = new Array(this.data.series.length).fill(0).map(() => []);
     this.sectionSlider = new Slider(true);
