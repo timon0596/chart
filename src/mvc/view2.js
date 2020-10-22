@@ -7,6 +7,13 @@ export class View {
     this.min;
     this.max;
     this.diapason;
+    this.sectionStartIndex;
+    this.sectionEndIndex;
+    this.sectionChunkStartIndex;
+    this.sectionChunkEndIndex;
+    this.startIndex;
+    this.endIndex;
+    this.sectionDiapason = 10000;
     this.chunks = 100;
     this.dataArrays = this.data.series.map((el) => el.data);
     this.maxDataArrayLength = this.dataArrays.reduce((a, el) => Math.max(a.length, el.length));
@@ -30,8 +37,24 @@ export class View {
     this.pointRadius = 2;
     this.init();
     $(this.chunkSlider).on('chart-scale-change', (e) => {
-      const statrtEndIndexes = this.getIndexesDiapason(e.pos);
+      const statrtEndIndexes = this.getIndexesDiapason({ pos: e.pos, diapason: this.sectionEndIndex - this.sectionStartIndex });
+      this.sectionChunkStartIndex = statrtEndIndexes.startIndex;
+      this.sectionChunkEndIndex = statrtEndIndexes.endIndex;
+      this.startIndex = this.sectionChunkStartIndex + this.sectionStartIndex;
+      this.endIndex = this.sectionChunkEndIndex + this.sectionStartIndex;
+      // console.log(this.startIndex, this.endIndex);
+      this.renderAllCharts({ startIndex: this.startIndex, endIndex: this.endIndex });
     });
+    $(this.sectionSlider).on('chart-scale-change', (e) => {
+      const statrtEndIndexes = this.getIndexesDiapason({ pos: e.pos, diapason: this.maxDataArrayLength });
+      this.sectionStartIndex = statrtEndIndexes.startIndex;
+      this.sectionEndIndex = statrtEndIndexes.endIndex;
+      this.startIndex = this.sectionChunkStartIndex + this.sectionStartIndex;
+      this.endIndex = this.sectionChunkEndIndex + this.sectionStartIndex;
+      this.renderAllCharts({ startIndex: this.startIndex, endIndex: this.endIndex });
+      console.log(this.startIndex, this.endIndex);
+    });
+    this.sectionSlider.setChunkHandle(0);
     this.chunkSlider.setHandle({ i: 0, position: 0 });
     this.chunkSlider.setHandle({ i: 1, position: 100 });
   }
@@ -66,10 +89,12 @@ export class View {
       Xaxis: { start: this.Xstart, end: this.Xend },
       Yaxis: { start: this.Ystart, end: this.Yend },
     };
+    const val = Math.round(this.sectionDiapason / this.maxDataArrayLength * 100);
+    this.sectionSlider.setChunkDistance(val);
   }
 
-  getIndexesDiapason(pos) {
-    return { startIndex: Math.round(pos.start * this.maxDataArrayLength), endIndex: Math.round(pos.end * this.maxDataArrayLength) };
+  getIndexesDiapason({ pos, diapason }) {
+    return { startIndex: Math.round(pos.start * diapason), endIndex: Math.round(pos.end * diapason) };
   }
 
   renderAxises({ Xaxis, Yaxis }) {
@@ -119,11 +144,11 @@ export class View {
   }
 
   drawPoint({
-    data, index, i, offset,
+    data, index, i, offset, j,
   }) {
     const y = this.Yend.y - ((data[i] - this.min) / this.diapason * this.Yheight);
 
-    const x = this.Xstart.x + offset * i;
+    const x = this.Xstart.x + offset * j;
     this.context.beginPath();
     this.context.arc(x, y, this.pointRadius, 0, 2 * Math.PI);
     this.dataCoords[index].push({ x, y, val: data[i] });
@@ -155,12 +180,14 @@ export class View {
   }) {
     const offset = this.Xwidth / (endIndex - startIndex);
     const arr = data.slice(startIndex, endIndex);
-    for (let i = 0; i < arr.length; i++) {
+    for (let i = startIndex; i < endIndex; i++) {
+      const j = i - startIndex;
       this.drawPoint({
         data,
         index,
         i,
         offset,
+        j,
       });
     }
   }
@@ -170,7 +197,8 @@ export class View {
     // const pointsAmount = this.dataArrays.reduce((a, el) => a.length + el.length);
 
     // const chunkLength = this.maxDataArrayLength / this.chunkSections;
-
+    console.log(startIndex);
+    console.log(endIndex);
     this.dataArrays.forEach((data, index) => {
       const drawChartParametres = {
         data, index, startIndex, endIndex,

@@ -31,6 +31,8 @@ export class Slider {
 
   setChunkDistance(value) {
     this.chunkDistance = value;
+    this.chunkHandle.css('width', `${value}%`);
+    console.log(value);
   }
 
   handleSliderMousemove(e) {
@@ -38,11 +40,11 @@ export class Slider {
       if (this.isSectionSlider) {
         let x = (e.pageX - this.el[0].getBoundingClientRect().left)
          / this.el[0].getBoundingClientRect().width * 100;
-        x += this.chunkDistance;
-        x = x > 100
+
+        x = x + this.chunkDistance > 100
           ? (100 - this.chunkDistance) : x < 0
             ? 0 : x;
-        this.currentHandle.css('left', `${x}%`);
+        this.chunkHandle.css('left', `${x}%`);
         this.computeChunkHandlePos();
       } else {
         let x = (e.pageX - this.el[0].getBoundingClientRect().left)
@@ -63,6 +65,15 @@ export class Slider {
     }
   }
 
+  computeChunkHandlePos() {
+    const h = this.chunkHandle[0].getBoundingClientRect();
+    const el = this.el[0].getBoundingClientRect();
+    this.pos[0] = (h.left
+        - el.left) / el.width;
+    this.pos[0] = this.pos[0] < 0 ? 0 : this.pos[0];
+    this.pos[1] = this.pos[0] + this.chunkDistance / 100;
+  }
+
   setHandle({ i, position }) {
     this.handles[i].css('left', `${position}%`);
     this.computePos(i);
@@ -74,11 +85,15 @@ export class Slider {
     $(this).trigger(event);
   }
 
-  setHandlesChunk(pos) {
-    this.setHandleWithoutTrigger({ i: 0, pos });
-    this.computePos(0);
-    this.setHandleWithoutTrigger({ i: 1, pos: pos + this.chunkDistance });
-    this.computePos(1);
+  setChunkHandle(pos) {
+    this.chunkHandle.css('left', `${pos}%`);
+    this.computeChunkHandlePos();
+    const event = $.Event('chart-scale-change');
+    event.pos = {
+      start: Math.min(...this.pos),
+      end: Math.max(...this.pos),
+    };
+    $(this).trigger(event);
   }
 
   setHandleWithoutTrigger({ i, pos }) {
