@@ -22,6 +22,7 @@ export class View {
     this.sectionSlider = new Slider(true);
     this.chunkSlider = new Slider(false);
     this.canvas = $('<canvas>');
+    this.canvas2 = $('<canvas>');
     this.canvasWrapper = $('<div>', { class: 'canvasWrapper' });
     this.context = this.canvas[0].getContext('2d');
     this.elementsInit();
@@ -149,6 +150,13 @@ export class View {
     const y = this.Yend.y - ((data[i] - this.min) / this.diapason * this.Yheight);
 
     const x = this.Xstart.x + offset * j;
+    if (j > 0) {
+      const prevY = this.Yend.y - ((data[i - 1] - this.min) / this.diapason * this.Yheight);
+      const prevX = this.Xstart.x + offset * (j - 1);
+      this.context.lineTo(x, y);
+      this.context.strokeStyle = this.colors[index];
+      this.context.stroke();
+    }
     this.context.beginPath();
     this.context.arc(x, y, this.pointRadius, 0, 2 * Math.PI);
     this.dataCoords[index].push({ x, y, val: data[i] });
@@ -209,7 +217,7 @@ export class View {
   }
 
   clearChart() {
-    this.context.clearRect(this.Xstart.x - this.pointRadius, this.Ystart.y - this.pointRadius, this.Xwidth + 2 * this.pointRadius, this.Yheight + 2 * this.pointRadius);
+    this.context.clearRect(this.Xstart.x - 2 * this.pointRadius, 0, this.canvasWidth, this.Yheight + this.Ystart.y + 2 * this.pointRadius);
   }
 
   generateColor() {
