@@ -4,6 +4,7 @@ export class View {
   constructor(data) {
     this.chunkSections = 10;
     this.data = data;
+    this.font;
     this.min;
     this.max;
     this.diapason;
@@ -57,7 +58,7 @@ export class View {
     });
     this.sectionSlider.setChunkHandle(0);
     this.chunkSlider.setHandle({ i: 0, position: 0 });
-    this.chunkSlider.setHandle({ i: 1, position: 100 });
+    this.chunkSlider.setHandle({ i: 1, position: 5 });
   }
 
   init() {
@@ -92,6 +93,7 @@ export class View {
     };
     const val = Math.round(this.sectionDiapason / this.maxDataArrayLength * 100);
     this.sectionSlider.setChunkDistance(val);
+    this.font = this.canvasHeight * 0.01 > 3 ? `${3}px` : `${this.canvasHeight * 0.01}px`;
   }
 
   getIndexesDiapason({ pos, diapason }) {
@@ -108,7 +110,7 @@ export class View {
     this.context.moveTo(axis.start.x, axis.start.y);
     this.context.lineTo(axis.end.x, axis.end.y);
     this.context.stroke();
-    this.addDelimitersY(axis);
+    this.addDelimitersY();
   }
 
   renderXaxis(axis) {
@@ -133,16 +135,16 @@ export class View {
     this.diapason = this.max - this.min;
   }
 
-  addDelimitersY(axis) {
-    this.context.beginPath();
-    this.context.font = this.h * 0.01 > 3 ? `${3}px` : `${this.h * 0.01}px`;
-    this.context.textAlign = 'center';
-    this.context.fillText(this.max, axis.start.x - 10, axis.start.y);
-    this.context.beginPath();
-    this.context.font = this.h * 0.01 > 3 ? `${3}px` : `${this.h * 0.01}px`;
-    this.context.textAlign = 'center';
-    this.context.fillText(this.min, axis.end.x - 10, axis.end.y);
-  }
+  // addDelimitersY(axis) {
+  //   this.context.beginPath();
+  //   this.context.font = this.h * 0.01 > 3 ? `${3}px` : `${this.h * 0.01}px`;
+  //   this.context.textAlign = 'center';
+  //   this.context.fillText(this.max, axis.start.x - 10, axis.start.y);
+  //   this.context.beginPath();
+  //   this.context.font = this.h * 0.01 > 3 ? `${3}px` : `${this.h * 0.01}px`;
+  //   this.context.textAlign = 'center';
+  //   this.context.fillText(this.min, axis.end.x - 10, axis.end.y);
+  // }
 
   drawPoint({
     data, index, i, offset, j,
@@ -198,6 +200,7 @@ export class View {
         j,
       });
     }
+    this.addDelimitersX({ startIndex, endIndex });
   }
 
   renderAllCharts({ startIndex, endIndex }) {
@@ -225,5 +228,68 @@ export class View {
       this.colors.add(`rgba(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},1)`);
     }
     this.colors = Array.from(this.colors);
+  }
+
+  addDelimitersY() {
+    const exponent = ['Т', 'М'];
+
+    for (let i = 0; i < 10; i++) {
+      let divider = 1000;
+      let order = 0;
+      let value = (this.min + i * this.diapason / 9).toFixed(2);
+      while (value / divider > 1) {
+        divider *= divider;
+        order++;
+      }
+      divider /= 1000;
+      value = exponent[order - 1] ? ((value / (1000 ** order)).toFixed(1) + exponent[order - 1]) : value;
+      const offset = this.Ystart.y + this.Yheight - i * this.Yheight / 9;
+      this.context.beginPath();
+      this.context.moveTo(this.Ystart.x, offset);
+      this.context.lineTo(this.Ystart.x - 10, offset);
+      this.context.stroke();
+      this.context.font = this.font;
+      this.context.textAlign = 'center';
+      this.context.fillText(value, this.Ystart.x - 30, offset);
+    }
+  }
+
+  addDelimitersX({ startIndex, endIndex }) {
+    this.context.clearRect(this.Xstart.x - 10, this.Xstart.y, this.canvasWidth, this.canvasHeight);
+    const offset = (this.Xwidth) / (endIndex - startIndex);
+    let offset2 = offset;
+    const condition = ((endIndex - startIndex) > 1000) || (startIndex > 1000);
+    const multiplicity2 = condition ? 2 : 1;
+    let multiplicity = 1 * multiplicity2;
+    while (offset2 < 20) {
+      offset2 += offset;
+      multiplicity += 1 * multiplicity2;
+    }
+
+    for (let i = startIndex; i < endIndex; i++) {
+      if ((i + 1 - startIndex) % multiplicity !== 0) {
+        continue;
+      }
+      this.context.beginPath();
+      this.context.moveTo(this.Xstart.x + offset * (i - startIndex), this.Xstart.y);
+      this.context.lineTo(this.Xstart.x + offset * (i - startIndex), this.Xstart.y + 10);
+      this.context.strokeStyle = '#000';
+      this.context.stroke();
+      this.context.font = this.font;
+      this.context.textAlign = 'center';
+      this.context.fillStyle = '#000';
+
+      // const distance = Math.sqrt((+this.Xstart.x + offset * (i - startIndex)) ** 2 + (this.Xstart.y + 10 + 10) ** 2);
+
+      // const rad = Math.atan((this.Xstart.x + offset * (i - startIndex)) / (this.Xstart.y + 10 + 10));
+
+      // this.context.rotate(rad);
+      this.context.fillText(
+        this.data.x.categories[i],
+        this.Xstart.x + offset * (i - startIndex),
+        this.Xstart.y + 10 + 10,
+      );
+      // this.context.rotate(-rad);
+    }
   }
 }
