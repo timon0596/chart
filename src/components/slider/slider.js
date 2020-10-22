@@ -32,7 +32,6 @@ export class Slider {
   setChunkDistance(value) {
     this.chunkDistance = value;
     this.chunkHandle.css('width', `${value}%`);
-    console.log(value);
   }
 
   handleSliderMousemove(e) {

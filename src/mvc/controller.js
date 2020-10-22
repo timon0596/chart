@@ -12,17 +12,18 @@ export class Controller {
       console.log(this.view.dataCoords);
     });
     $(window).on('mousemove.intersection', this.handleWindowMousemove);
+    $(window).resize(this.handleWindowResize);
   }
 
   handleWindowMousemove(e) {
     const x = e.pageX;
     const y = e.pageY;
-    if (this.view.pointRadius >= 3) {
+    if (this.view.pointRadius > 1) {
       this.view.pointIntersection({ x, y, e });
     }
   }
 
   handleWindowResize() {
-
+    this.view.reRender();
   }
 }

@@ -1,4 +1,5 @@
-import { Slider } from '../components/slider/slider.js';
+import { Slider } from '../components/slider/slider';
+import { Chartname } from '../components/chartname/chartname';
 
 export class View {
   constructor(data) {
@@ -26,8 +27,10 @@ export class View {
     this.canvas2 = $('<canvas>');
     this.$tip = $('<div>', { class: 'tip' });
     this.canvasWrapper = $('<div>', { class: 'canvasWrapper' });
+    this.mainWrapper = $('<div>', { class: 'mainWrapper' });
+    this.chartnames = $('<div>', { class: 'chartnames' });
+    this.chartnamesArray;
     this.context = this.canvas[0].getContext('2d');
-    this.elementsInit();
     this.canvasWidth;
     this.canvasHeight;
     this.Xstart;
@@ -71,13 +74,35 @@ export class View {
     this.renderAxises(this.axisesCoordinates);
   }
 
+  reRender() {
+    this.defineSizes(this.canvasWrapper[0].getBoundingClientRect());
+    this.canvasResize();
+    this.renderAxises(this.axisesCoordinates);
+    this.renderAllCharts({ startIndex: this.startIndex, endIndex: this.endIndex });
+  }
+
   elementsInit() {
-    this.canvasWrapper.append(this.canvas);
-    this.canvasWrapper.append(this.sectionSlider.el);
-    this.canvasWrapper.append(this.chunkSlider.el);
+    this.canvasWrapper
+      .append(this.canvas);
+
+    this.mainWrapper
+      .append(this.canvasWrapper)
+      .append(this.sectionSlider.el)
+      .append(this.chunkSlider.el)
+      .append(this.chartnames);
     this.canvasWrapper.append(this.$tip);
     this.chunkSlider.el.css('margin-top', '5px');
-    this.data.$root.append(this.canvasWrapper);
+    this.data.$root.append(this.mainWrapper);
+    this.chartnamesArray = new Array(this.data.series.length)
+      .fill(0)
+      .map((el, i) => {
+        const color = this.colors[i];
+        const { name } = this.data.series[i];
+        const chartname = new Chartname({ color, name });
+        this.chartnames.append(chartname.container);
+        return chartname;
+      });
+    console.log(this.chartnamesArray);
   }
 
   defineSizes(wrapperBoundingRect) {
@@ -221,7 +246,6 @@ export class View {
         j,
       });
     }
-    this.addDelimitersX({ startIndex, endIndex });
   }
 
   renderAllCharts({ startIndex, endIndex }) {
@@ -238,6 +262,7 @@ export class View {
 
       this.renderChart(drawChartParametres);
     });
+    this.addDelimitersX({ startIndex, endIndex });
   }
 
   clearChart() {

@@ -13,7 +13,7 @@ export const config = {
       data: new Array(100000).fill(0).map(() => (Math.random() * 100).toFixed(2) * 100),
     },
     {
-      name: 'feels_like',
+      name: 'feels like',
       data: new Array(100000).fill(0).map(() => (Math.random() * 10).toFixed(2) * 100),
     },
   ],
