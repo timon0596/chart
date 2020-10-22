@@ -301,7 +301,7 @@ export class View {
   }
 
   addDelimitersX({ startIndex, endIndex }) {
-    this.context.clearRect(this.Xstart.x - 10, this.Xstart.y, this.canvasWidth, this.canvasHeight);
+    this.context.clearRect(this.Xstart.x - 10, this.Xstart.y + 1, this.canvasWidth, this.canvasHeight);
     const offset = (this.Xwidth) / (endIndex - startIndex);
     let offset2 = offset;
     const condition = ((endIndex - startIndex) > 1000) || (startIndex > 1000);
