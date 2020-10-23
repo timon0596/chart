@@ -17,15 +17,17 @@ export class View {
     this.endIndex;
     this.chunks = 100;
     this.dataArrays = this.data.series.map((el) => el.data);
-    this.maxDataArrayLength = this.dataArrays.reduce((a, el) => Math.max(a.length, el.length));
+    this.maxDataArrayLength = this.data.series.length > 1 ? this.dataArrays.reduce((a, el) => Math.max(a.length, el.length)) : this.data.series[0].data.length;
+
     this.sectionDiapason = this.maxDataArrayLength < 10000 ? this.maxDataArrayLength : 10000;
     this.colors = new Set();
     this.dataCoords = new Array(this.data.series.length).fill(0).map(() => []);
     this.sectionSlider = new Slider(true);
     this.chunkSlider = new Slider(false);
     this.canvas = $('<canvas>');
-    this.canvas2 = $('<canvas>');
     this.$tip = $('<div>', { class: 'tip' });
+    this.nameY = $('<div>', { class: 'nameY' });
+    this.nameX = $('<div>', { class: 'nameX' });
     this.canvasWrapper = $('<div>', { class: 'canvasWrapper' });
     this.mainWrapper = $('<div>', { class: 'mainWrapper' });
     this.chartnames = $('<div>', { class: 'chartnames' });
@@ -102,8 +104,12 @@ export class View {
   }
 
   elementsInit() {
+    this.nameY.append(this.data.y.title);
+    this.data.$root.append(this.nameY);
+    this.nameX.append(this.data.x.title);
     this.canvasWrapper
-      .append(this.canvas);
+      .append(this.canvas)
+      .append(this.nameX);
 
     this.mainWrapperAppending();
 
@@ -275,9 +281,6 @@ export class View {
     this.dataCoords = new Array(this.data.series.length).fill(0).map(() => []);
     this.definePointRadius(endIndex - startIndex);
     this.clearChart();
-    // const pointsAmount = this.dataArrays.reduce((a, el) => a.length + el.length);
-
-    // const chunkLength = this.maxDataArrayLength / this.chunkSections;
     this.dataArrays.forEach((data, index) => {
       const drawChartParametres = {
         data, index, startIndex, endIndex,
@@ -348,17 +351,11 @@ export class View {
       this.context.textAlign = 'center';
       this.context.fillStyle = '#000';
 
-      // const distance = Math.sqrt((+this.Xstart.x + offset * (i - startIndex)) ** 2 + (this.Xstart.y + 10 + 10) ** 2);
-
-      // const rad = Math.atan((this.Xstart.x + offset * (i - startIndex)) / (this.Xstart.y + 10 + 10));
-
-      // this.context.rotate(rad);
       this.context.fillText(
         this.data.x.categories[i],
         this.Xstart.x + offset * (i - startIndex),
         this.Xstart.y + 10 + 10,
       );
-      // this.context.rotate(-rad);
     }
   }
 }
