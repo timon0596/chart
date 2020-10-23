@@ -238,15 +238,17 @@ export class View {
   }) {
     const length = endIndex - startIndex;
     const offset = this.Xwidth / (endIndex - startIndex);
-    const chunks = length > 10000 ? this.chunks : 1;
+    const chunks = length > 10000 ? Math.ceil(length / 10000) : 1;
     const $this = this;
-    const chunkLength = length > 10000 ? length / this.chunks : length;
+    const chunkLength = 10000;
     for (let j = 0; j < chunks; j++) {
       setTimeout((param) => {
         for (let i = 0; i < chunkLength; i++) {
-          setTimeout(this.drawPoint.bind($this), 0, {
-            data, index, i: chunkLength * j + i, offset, j: i + j * chunkLength,
-          });
+          if ((chunkLength * j + i) < length) {
+            setTimeout(this.drawPoint.bind($this), 0, {
+              data, index, i: chunkLength * j + i, offset, j: i + j * chunkLength,
+            });
+          }
         }
       }, 0, j);
     }
