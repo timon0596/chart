@@ -10,13 +10,13 @@ export class Controller {
     this.handleWindowResize = this.handleWindowResize.bind(this);
     $(this.view.canvas).click(() => {
     });
-    $(window).on('mousemove.intersection', this.handleWindowMousemove);
+    $(this.view.canvas).on('mousemove', this.handleWindowMousemove);
     $(window).resize(this.handleWindowResize);
   }
 
   handleWindowMousemove(e) {
-    const x = e.pageX;
-    const y = e.pageY;
+    const x = e.clientX;
+    const y = e.clientY;
     if (this.view.pointRadius > 1) {
       this.view.pointIntersection({ x, y, e });
     }

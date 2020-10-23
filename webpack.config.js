@@ -7,9 +7,12 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
 
-  entry: './src/index.js',
+  entry: {
+    main1: './src/index.js',
+    init1: './src/init.js',
+  },
   output: {
-    filename: 'main.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
   devtool: 'source-map',
@@ -86,10 +89,10 @@ module.exports = {
     }), new MiniCssExtractPlugin({
       filename: '[name].[hash].css',
     }),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery',
-    }),
+    // new webpack.ProvidePlugin({
+    //   $: 'jquery',
+    //   jQuery: 'jquery',
+    //   'window.jQuery': 'jquery',
+    // }),
   ],
 };

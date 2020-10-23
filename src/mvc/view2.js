@@ -20,9 +20,8 @@ export class View {
     this.dataArrays = this.data.series.map((el) => el.data);
     // this.maxDataArrayLength = this.data.series.length > 1 ? this.dataArrays.reduce((a, el) => Math.max(a.length, el.length)) : this.data.series[0].data.length;
     this.maxDataArrayLength = this.data.series[0].data.length;
-    console.log(this.data.series.length);
 
-    this.sectionDiapason = this.maxDataArrayLength < 10000 ? this.maxDataArrayLength : 10000;
+    this.sectionDiapason = this.maxDataArrayLength < 10000 ? this.maxDataArrayLength : this.maxDataArrayLength > 1000000 ? 50000 : 10000;
     this.colors = new Set();
     this.dataCoords = new Array(this.data.series.length).fill(0).map(() => []);
     this.sectionSlider = new Slider(true);
@@ -199,6 +198,7 @@ export class View {
   }
 
   pointIntersection({ x, y, e }) {
+    console.log(111111111111111);
     const br = this.canvas[0].getBoundingClientRect();
     let isIntersected = false;
     for (let index = 0; index < this.dataCoords.length; index++) {
@@ -303,6 +303,7 @@ export class View {
       this.data.diapason.full ? this.renderChartAsync(drawChartParametres) : this.renderChart(drawChartParametres);
     });
     this.addDelimitersX({ startIndex, endIndex });
+    console.log(this.dataCoords);
   }
 
   clearChart() {
