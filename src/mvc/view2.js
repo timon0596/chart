@@ -3,6 +3,7 @@ import { Chartname } from '../components/chartname/chartname';
 
 export class View {
   constructor(data) {
+    this.timeOuts = [];
     this.chunkSections = 10;
     this.data = data;
     this.font;
@@ -31,10 +32,10 @@ export class View {
     this.nameY = $('<div>', { class: 'nameY' });
     this.nameX = $('<div>', { class: 'nameX' });
     this.canvasWrapper = $('<div>', { class: 'canvasWrapper' });
-    this.mainWrapper = $('<div>', { class: 'mainWrapper' });
     this.chartnames = $('<div>', { class: 'chartnames' });
-    this.chartnamesArray;
     this.context = this.canvas[0].getContext('2d');
+    this.mainWrapper = $('<div>', { class: 'mainWrapper' });
+    this.chartnamesArray;
     this.canvasWidth;
     this.canvasHeight;
     this.Xstart;
@@ -62,7 +63,6 @@ export class View {
       this.sectionChunkEndIndex = statrtEndIndexes.endIndex;
       this.startIndex = this.sectionChunkStartIndex + this.sectionStartIndex;
       this.endIndex = this.sectionChunkEndIndex + this.sectionStartIndex;
-      // console.log(this.startIndex, this.endIndex);
       this.renderAllCharts({ startIndex: this.startIndex, endIndex: this.endIndex });
     });
     $(this.sectionSlider).on('chart-scale-change', (e) => {
@@ -72,7 +72,6 @@ export class View {
       this.startIndex = this.sectionChunkStartIndex + this.sectionStartIndex;
       this.endIndex = this.sectionChunkEndIndex + this.sectionStartIndex;
       this.renderAllCharts({ startIndex: this.startIndex, endIndex: this.endIndex });
-      console.log(this.maxDataArrayLength);
     });
     this.sectionSlider.setChunkHandle(0);
     this.chunkSlider.setHandle({ i: 0, position: 0 });
@@ -84,6 +83,19 @@ export class View {
     this.canvasResize();
     this.renderAxises(this.axisesCoordinates);
     this.renderAllCharts({ startIndex: this.startIndex, endIndex: this.endIndex });
+  }
+
+  asyncReRender() {
+    this.data.$root.html('');
+    this.canvas = $('<canvas>');
+    this.$tip = $('<div>', { class: 'tip' });
+    this.nameY = $('<div>', { class: 'nameY' });
+    this.nameX = $('<div>', { class: 'nameX' });
+    this.canvasWrapper = $('<div>', { class: 'canvasWrapper' });
+    this.chartnames = $('<div>', { class: 'chartnames' });
+    this.context = this.canvas[0].getContext('2d');
+    this.mainWrapper = $('<div>', { class: 'mainWrapper' });
+    this.asyncInit();
   }
 
   asyncInit() {
@@ -253,9 +265,9 @@ export class View {
       setTimeout((param) => {
         for (let i = 0; i < chunkLength; i++) {
           if ((chunkLength * j + i) < length) {
-            setTimeout(this.drawPoint.bind($this), 0, {
+            this.timeOuts.push(setTimeout(this.drawPoint.bind($this), 0, {
               data, index, i: chunkLength * j + i, offset, j: i + j * chunkLength,
-            });
+            }));
           }
         }
       }, 0, j);

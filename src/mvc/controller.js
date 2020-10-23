@@ -9,7 +9,6 @@ export class Controller {
     this.handleWindowMousemove = this.handleWindowMousemove.bind(this);
     this.handleWindowResize = this.handleWindowResize.bind(this);
     $(this.view.canvas).click(() => {
-      console.log(this.view.dataCoords);
     });
     $(window).on('mousemove.intersection', this.handleWindowMousemove);
     $(window).resize(this.handleWindowResize);
@@ -24,6 +23,7 @@ export class Controller {
   }
 
   handleWindowResize() {
-    this.view.reRender();
+    this.view.timeOuts.forEach((el) => { clearTimeout(el); });
+    this.data.diapason.full ? this.view.asyncReRender() : this.view.reRender();
   }
 }
