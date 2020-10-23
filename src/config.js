@@ -15,6 +15,16 @@ export const config = {
       name: 'temp',
       data: new Array(1234).fill(0).map(() => (Math.random() * 100).toFixed(2) * 100),
     },
+    {
+      name: 'temp',
+      data: new Array(1234).fill(0).map(() => (Math.random() * 100).toFixed(2) * 100),
+    }, {
+      name: 'temp',
+      data: new Array(1234).fill(0).map(() => (Math.random() * 100).toFixed(2) * 100),
+    }, {
+      name: 'temp',
+      data: new Array(1234).fill(0).map(() => (Math.random() * 100).toFixed(2) * 100),
+    },
 
   ],
 };

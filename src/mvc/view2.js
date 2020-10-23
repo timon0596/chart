@@ -17,7 +17,9 @@ export class View {
     this.endIndex;
     this.chunks = 100;
     this.dataArrays = this.data.series.map((el) => el.data);
-    this.maxDataArrayLength = this.data.series.length > 1 ? this.dataArrays.reduce((a, el) => Math.max(a.length, el.length)) : this.data.series[0].data.length;
+    // this.maxDataArrayLength = this.data.series.length > 1 ? this.dataArrays.reduce((a, el) => Math.max(a.length, el.length)) : this.data.series[0].data.length;
+    this.maxDataArrayLength = this.data.series[0].data.length;
+    console.log(this.data.series.length);
 
     this.sectionDiapason = this.maxDataArrayLength < 10000 ? this.maxDataArrayLength : 10000;
     this.colors = new Set();
@@ -70,6 +72,7 @@ export class View {
       this.startIndex = this.sectionChunkStartIndex + this.sectionStartIndex;
       this.endIndex = this.sectionChunkEndIndex + this.sectionStartIndex;
       this.renderAllCharts({ startIndex: this.startIndex, endIndex: this.endIndex });
+      console.log(this.maxDataArrayLength);
     });
     this.sectionSlider.setChunkHandle(0);
     this.chunkSlider.setHandle({ i: 0, position: 0 });
@@ -96,7 +99,6 @@ export class View {
   }
 
   mainWrapperAppending() {
-    this.data.diapason.full ? this.mainWrapper.addClass('mainWrapper_full') : 0;
     this.mainWrapper.append(this.canvasWrapper);
     !this.data.diapason.full ? this.mainWrapper.append(this.sectionSlider.el) : 0;
     !this.data.diapason.full ? this.mainWrapper.append(this.chunkSlider.el) : 0;
