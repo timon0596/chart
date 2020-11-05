@@ -23,8 +23,10 @@ $(document).ready(() => {
     };
     return new_config;
   }
-  $('.root1').myChart(newConfig());
-  $('.root2').myChart({ ...newConfig(123123), diapason: { full: false } });
-  $('.root3').myChart({ ...newConfig(111111), diapason: { full: true } });
-  $('.root4').myChart({ ...newConfig(5000000), diapason: { full: false } });
+  try {
+    $('.root2').myChart({ ...newConfig(123123), diapason: { full: false } });
+    $('.root3').myChart({ ...newConfig(5000000), diapason: { full: true } });
+  } catch (e) {
+    console.log(e);
+  }
 });

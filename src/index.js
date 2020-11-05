@@ -1,5 +1,4 @@
 import './index.pug';
-
 import './plugin.js';
 import './init.js';
 

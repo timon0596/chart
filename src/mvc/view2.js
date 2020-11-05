@@ -6,6 +6,7 @@ export class View {
     this.timeOuts = [];
     this.chunkSections = 10;
     this.data = data;
+    this.promises = [];
     this.font;
     this.min;
     this.max;
@@ -262,16 +263,32 @@ export class View {
     const $this = this;
     const chunkLength = 10000;
     for (let j = 0; j < chunks; j++) {
-      setTimeout((param) => {
+      // setTimeout((param) => {
+      //   for (let i = 0; i < chunkLength; i++) {
+      //     if ((chunkLength * j + i) < length) {
+      //       this.timeOuts.push(setTimeout(this.drawPoint.bind($this), 0, {
+      //         data, index, i: chunkLength * j + i, offset, j: i + j * chunkLength,
+      //       }));
+      //     }
+      //   }
+      // }, 0, j);
+      const promise = () => new Promise((res, rej) => {
         for (let i = 0; i < chunkLength; i++) {
           if ((chunkLength * j + i) < length) {
-            this.timeOuts.push(setTimeout(this.drawPoint.bind($this), 0, {
-              data, index, i: chunkLength * j + i, offset, j: i + j * chunkLength,
-            }));
+            this.drawPoint({
+              data,
+              index,
+              i: chunkLength * j + i,
+              offset,
+              j: i + j * chunkLength,
+            });
           }
         }
-      }, 0, j);
+        res();
+      });
+      this.promises.push(promise);
     }
+    this.promises.reduce((acc, cur) => acc.then(cur), Promise.resolve()).catch((e) => console.log(e));
   }
 
   renderChart({
