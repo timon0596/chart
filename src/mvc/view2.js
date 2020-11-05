@@ -199,7 +199,6 @@ export class View {
   }
 
   pointIntersection({ x, y, e }) {
-    console.log(111111111111111);
     const br = this.canvas[0].getBoundingClientRect();
     let isIntersected = false;
     for (let index = 0; index < this.dataCoords.length; index++) {
@@ -263,15 +262,6 @@ export class View {
     const $this = this;
     const chunkLength = 10000;
     for (let j = 0; j < chunks; j++) {
-      // setTimeout((param) => {
-      //   for (let i = 0; i < chunkLength; i++) {
-      //     if ((chunkLength * j + i) < length) {
-      //       this.timeOuts.push(setTimeout(this.drawPoint.bind($this), 0, {
-      //         data, index, i: chunkLength * j + i, offset, j: i + j * chunkLength,
-      //       }));
-      //     }
-      //   }
-      // }, 0, j);
       const promise = () => new Promise((res, rej) => {
         for (let i = 0; i < chunkLength; i++) {
           if ((chunkLength * j + i) < length) {
@@ -320,7 +310,6 @@ export class View {
       this.data.diapason.full ? this.renderChartAsync(drawChartParametres) : this.renderChart(drawChartParametres);
     });
     this.addDelimitersX({ startIndex, endIndex });
-    console.log(this.dataCoords);
   }
 
   clearChart() {
