@@ -165,6 +165,5 @@
 "use strict";
 eval("__webpack_require__.r(__webpack_exports__);\n/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var _plugin_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./plugin.js */ \"./src/plugin.js\");\n\n\nfunction newConfig(num = 1234) {\n  const new_config = {\n    title: 'monthly average temperature',\n    diapason: {\n      full: false\n    },\n    x: {\n      categories: new Array(num).fill(0).map((el, i) => i + 1),\n      title: 'indexes'\n    },\n    y: {\n      title: 'temperature'\n    },\n    series: [{\n      name: 'qwer',\n      data: new Array(num).fill(0).map(() => (Math.random() * 100).toFixed(2) * 10)\n    }]\n  };\n  return new_config;\n}\n\n$('.root2').myChart({ ...newConfig(123123),\n  diapason: {\n    full: false\n  }\n});\n$('.root3').myChart({ ...newConfig(50000),\n  diapason: {\n    full: true\n  },\n  series: [{\n    name: 'qwer',\n    data: new Array(5000000).fill(0).map((el, i) => (Math.sin(i * 0.001) * Math.exp(i * 0.000001)).toFixed(2))\n  }],\n  x: {\n    categories: new Array(5000000).fill(0).map((el, i) => i + 1),\n    title: 'indexes'\n  }\n});\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\")))\n\n//# sourceURL=webpack:///./src/init.js?");
 
-/***/ })
 
 /******/ });
