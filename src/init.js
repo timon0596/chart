@@ -26,7 +26,7 @@ function newConfig(num = 1234) {
 }
 $('.root2').myChart({ ...newConfig(123123), diapason: { full: false } });
 $('.root3').myChart({
-  ...newConfig(50000),
+  ...newConfig(1),
   diapason: { full: true },
   series: [
     {
