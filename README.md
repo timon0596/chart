@@ -1,2 +1,0 @@
-"# chart" 
-$('.root').myChart('coords')
