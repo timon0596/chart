@@ -9,24 +9,18 @@ module.exports = {
 
   entry: {
     main1: './src/index.js',
+    init1: './src/init.js',
   },
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
-  devtool: 'source-map',
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   optimization: {
     splitChunks: {
-      cacheGroups: {
-        commons: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      },
+      chunks: 'all',
     },
   },
   module: {
